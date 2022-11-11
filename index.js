@@ -1,7 +1,13 @@
 'use strict'
 
 let grid = document.getElementById('grid')
+let keyboard = document.getElementById('keyboard')
 
+let GREY = '#212121'
+let LIGHTGREY = '#888'
+let GREEN = '#538d4e'
+let YELLOW = '#b59f3b'
+let BLACK = '#111'
 function buildGrid() {
     for( let i = 0; i < 6 ; i++) {
         let row = document.createElement('div')
@@ -30,11 +36,12 @@ let wordList = [
 
 let randomIndex = Math.floor(Math.random() * wordList.length)
 let secret = wordList[randomIndex]
-
+let keyboardButtons = new Map()
 let attempts = []
 let currentAttempt = ''
 
 buildGrid()
+buildKeyBoard()
 updateGrid()
 window.addEventListener('keydown', handleKeyDown)
 
@@ -59,7 +66,7 @@ function drawAttempt(row, attempt, isCurrent) {
         }
         if(isCurrent) {
             
-            cell.style.backgroundColor = '#111'
+            cell.style.backgroundColor = BLACK
 
         } else {
             cell.style.backgroundColor = getBgColor(attempt, i)
@@ -77,15 +84,18 @@ function getBgColor ( attempt , i) {
 
 
     if( attemptLetter ===undefined || secret.indexOf(attemptLetter) === -1 ) {
-        return '#212121'
+        return GREY
     } 
     if(correctLetter === attemptLetter) {
-        return '#538d4e'
+        return GREEN
     }
 
-    return '#b59f3b'
+    return YELLOW
 }
 function handleKeyDown (e) {
+    if( e.ctrlKey || e.metaKey || e.altKey) {
+        return
+    }
     let letter = e.key.toLowerCase()
     if(letter === 'enter') {
         if(currentAttempt.length < 5) {
@@ -101,12 +111,59 @@ function handleKeyDown (e) {
         currentAttempt = ''
     } else if ( letter === 'backspace' ){
         currentAttempt = currentAttempt.slice(0, currentAttempt.length - 1)
-    } else if(/[a-z]/.test(letter)) {
+    } else if(/^[a-z]$/.test(letter)) {
         if(currentAttempt.length < 5) {
             currentAttempt += letter
         }
     }
     updateGrid()
+}
+
+
+function buildKeyBoard() {
+    buildKeyBoardRow('qwertyuiop', false)
+    buildKeyBoardRow('asdfghjkl', false)
+    buildKeyBoardRow('zxcvbnm', true)
+
+}
+
+function buildKeyBoardRow(letters, isLastRow) {
+    let row = document.createElement('div')
+    if(isLastRow) {
+        let button = document.createElement('button')
+        button.className = 'button'
+        button.textContent = 'Enter'
+        button.style.backgroundColor = LIGHTGREY
+        button.onclick = () => {
+           handleKeyDown('backspace')
+        }
+        row.appendChild(button)
+    }
+    for(let letter of letters) {
+        let button = document.createElement('button')
+        button.className = 'button'
+        button.textContent = letter
+        button.style.backgroundColor = LIGHTGREY
+        button.onclick = () => {
+            //TODO
+        }
+        row.appendChild(button)
+    }
+    if(isLastRow) {
+        let button = document.createElement('button')
+        button.className = 'button'
+        button.textContent = 'BackSpace'
+        button.style.backgroundColor = LIGHTGREY
+        button.onclick = () => {
+           handleKeyDown('backspace')
+        }
+        row.appendChild(button)
+    }
+    keyboard.appendChild(row)
+}
+
+function updateKeyBoard () {
+
 }
 
 document.addEventListener('click' , updateGrid)
