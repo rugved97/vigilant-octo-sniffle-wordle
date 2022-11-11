@@ -91,6 +91,8 @@ function drawAttempt(row, attempt, isCurrent) {
         } else {
             //lol-hack
             cell.innerHTML = '<div style="opacity:0">X</div>'
+            //hack
+            clearAnimation(cell)
         }
         if(isCurrent) {
             
@@ -132,6 +134,21 @@ function handleKeyDown (e) {
     handleKey(e.key)
 }
 
+function animatePress (index) {
+    let reowIndex = attempts.length
+    let row = grid.children[reowIndex]
+    let cell = row.children[index]
+    cell.style.animationName = 'press'
+    cell.style.animationDuration = '100ms'
+    cell.style.animationTimingFunction = 'ease-out'
+}
+
+function clearAnimation (cell) {
+    cell.style.animationName = ''
+    cell.style.animationDuration = ''
+    cell.style.animationTimingFunction = ''
+}
+
 function handleKey(key) {
     if(attempts.length === 6) {
         return
@@ -158,6 +175,7 @@ function handleKey(key) {
     } else if(/^[a-z]$/.test(letter)) {
         if(currentAttempt.length < 5) {
             currentAttempt += letter
+            animatePress(currentAttempt.length -1)
         }
     }
     updateGrid()
