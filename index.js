@@ -96,7 +96,11 @@ function handleKeyDown (e) {
     if( e.ctrlKey || e.metaKey || e.altKey) {
         return
     }
-    let letter = e.key.toLowerCase()
+    handleKey(e.key)
+}
+
+function handleKey(key) {
+    let letter = key.toLowerCase()
     if(letter === 'enter') {
         if(currentAttempt.length < 5) {
             return
@@ -118,8 +122,6 @@ function handleKeyDown (e) {
     }
     updateGrid()
 }
-
-
 function buildKeyBoard() {
     buildKeyBoardRow('qwertyuiop', false)
     buildKeyBoardRow('asdfghjkl', false)
@@ -135,7 +137,7 @@ function buildKeyBoardRow(letters, isLastRow) {
         button.textContent = 'Enter'
         button.style.backgroundColor = LIGHTGREY
         button.onclick = () => {
-           handleKeyDown('backspace')
+           handleKey('enter')
         }
         row.appendChild(button)
     }
@@ -145,7 +147,7 @@ function buildKeyBoardRow(letters, isLastRow) {
         button.textContent = letter
         button.style.backgroundColor = LIGHTGREY
         button.onclick = () => {
-            //TODO
+            handleKey(letter)
         }
         row.appendChild(button)
     }
@@ -155,7 +157,7 @@ function buildKeyBoardRow(letters, isLastRow) {
         button.textContent = 'BackSpace'
         button.style.backgroundColor = LIGHTGREY
         button.onclick = () => {
-           handleKeyDown('backspace')
+            handleKey('backspace')
         }
         row.appendChild(button)
     }
