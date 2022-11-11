@@ -35,15 +35,42 @@ let wordList = [
 ]
 
 let randomIndex = Math.floor(Math.random() * wordList.length)
-let secret = wordList[randomIndex]
+let secret = wordList[2]
 let keyboardButtons = new Map()
 let attempts = []
 let currentAttempt = ''
 
+loadGame()
 buildGrid()
 buildKeyBoard()
 updateGrid()
 window.addEventListener('keydown', handleKeyDown)
+
+function loadGame () {
+    let data
+    try {
+        data = JSON.parse(localStorage.getItem('data'))
+    } catch (error) {
+    }
+    if(data != null) {
+        if(data.secret === secret) {
+            attempts = data.attempts
+        }
+    }
+}
+
+function saveGame () {
+    let data = JSON.stringify({
+        secret,
+        attempts
+    })
+    try {
+        localStorage.setItem('data', data )
+        
+    } catch (error) {
+        
+    }
+}
 
 function updateGrid() {
     let row = grid.firstChild
@@ -100,6 +127,9 @@ function handleKeyDown (e) {
 }
 
 function handleKey(key) {
+    if(attempts.length === 6) {
+        return
+    }
     let letter = key.toLowerCase()
     if(letter === 'enter') {
         if(currentAttempt.length < 5) {
@@ -110,10 +140,13 @@ function handleKey(key) {
             alert('Not in my dict')
             return
         }
-
+        if(attempts.length === 5  && currentAttempt !== secret) {
+            alert(secret)
+        }
         attempts.push(currentAttempt)
         currentAttempt = ''
         updateKeyBoard()
+        saveGame()
     } else if ( letter === 'backspace' ){
         currentAttempt = currentAttempt.slice(0, currentAttempt.length - 1)
     } else if(/^[a-z]$/.test(letter)) {
