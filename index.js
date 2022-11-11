@@ -5,6 +5,7 @@ let keyboard = document.getElementById('keyboard')
 
 let GREY = '#212121'
 let LIGHTGREY = '#888'
+let MIDDLEGREY = '#666'
 let GREEN = '#538d4e'
 let YELLOW = '#b59f3b'
 let BLACK = '#111'
@@ -94,9 +95,14 @@ function drawAttempt(row, attempt, isCurrent) {
         if(isCurrent) {
             
             cell.style.backgroundColor = BLACK
+            cell.style.borderColor = ''
+            if(attempt[i] !== undefined) {
+                cell.style.borderColor = MIDDLEGREY
+            }
 
         } else {
             cell.style.backgroundColor = getBgColor(attempt, i)
+            cell.style.borderColor = getBgColor(attempt, i)
         }
 
         
@@ -221,6 +227,7 @@ function updateKeyBoard () {
     }
     for(let [key, button] of keyboardButtons) {
         button.style.backgroundColor = bestColors.get(key)
+        button.style.borderColor = bestColors.get(key)
     }
 }
 
