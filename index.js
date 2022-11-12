@@ -15,7 +15,13 @@ function buildGrid() {
         for(let j = 0 ;j < 5; j++ ) {
             let cell = document.createElement('div')
             cell.className = 'cell'
-            cell.textContent = ''
+            let front = document.createElement('div')
+            front.className = 'front'
+            let back = document.createElement('div')
+            back.className = 'back'
+            cell.appendChild(front)
+            cell.appendChild(back)
+
             row.appendChild(cell)
         }
     grid.appendChild(row)
@@ -36,7 +42,7 @@ let wordList = [
 ]
 
 let randomIndex = Math.floor(Math.random() * wordList.length)
-let secret = wordList[2]
+let secret = wordList[1]
 let keyboardButtons = new Map()
 let attempts = []
 let currentAttempt = ''
@@ -74,40 +80,46 @@ function saveGame () {
 }
 
 function updateGrid() {
-    let row = grid.firstChild
-    for ( let attempt of attempts) {
-        drawAttempt(row, attempt, false)
-        row = row.nextSibling
-
+    for(let i = 0; i < 6 ;i++) {
+        let row = grid.children[i]
+        if(i < attempts.length) {
+            drawAttempt(row, attempts[i], true)
+        } else if ( i === attempts.length) {
+            drawAttempt(row, currentAttempt, false)
+        } else {
+            drawAttempt(row, '' , false)
+        }
     }
-    drawAttempt(row, currentAttempt, true)
 }
 
-function drawAttempt(row, attempt, isCurrent) {
+function drawAttempt(row, attempt, solved) {
     for( let i =0 ; i < 5 ; i++) {
         let cell = row.children[i]
+        let front = cell.children[0]
+        let back = cell.children[1]
         if(attempt[i] !== undefined) {
-            cell.textContent = attempt[i]
+            front.textContent = attempt[i]
+            back.textContent = attempt[i]
         } else {
             //lol-hack
-            cell.innerHTML = '<div style="opacity:0">X</div>'
+            front.innerHTML = '<div style="opacity:0">X</div>'
+            back.innerHTML = '<div style="opacity:0">X</div>'
+
             //hack
             clearAnimation(cell)
         }
-        if(isCurrent) {
-            
-            cell.style.backgroundColor = BLACK
-            cell.style.borderColor = ''
-            if(attempt[i] !== undefined) {
-                cell.style.borderColor = MIDDLEGREY
-            }
-
-        } else {
-            cell.style.backgroundColor = getBgColor(attempt, i)
-            cell.style.borderColor = getBgColor(attempt, i)
+        front.style.backgroundColor = BLACK
+        front.style.borderColor = ''
+        if(attempt[i] !== undefined) {
+            front.style.borderColor = MIDDLEGREY
         }
-
-        
+        back.style.backgroundColor = getBgColor(attempt, i)
+        back.style.borderColor = getBgColor(attempt, i)    
+        if(solved) {
+            cell.classList.add('solved')
+        } else {
+            cell.classList.remove('solved')
+        }
     }
 
 }
