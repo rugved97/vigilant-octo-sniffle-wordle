@@ -42,7 +42,7 @@ let wordList = [
 ]
 
 let randomIndex = Math.floor(Math.random() * wordList.length)
-let secret = wordList[1]
+let secret = wordList[2]
 let keyboardButtons = new Map()
 let attempts = []
 let currentAttempt = ''
