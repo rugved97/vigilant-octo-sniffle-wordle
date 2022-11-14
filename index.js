@@ -9,25 +9,6 @@ let MIDDLEGREY = '#666'
 let GREEN = '#538d4e'
 let YELLOW = '#b59f3b'
 let BLACK = '#111'
-function buildGrid() {
-    for( let i = 0; i < 6 ; i++) {
-        let row = document.createElement('div')
-        for(let j = 0 ;j < 5; j++ ) {
-            let cell = document.createElement('div')
-            cell.className = 'cell'
-            let front = document.createElement('div')
-            front.className = 'front'
-            let back = document.createElement('div')
-            back.className = 'back'
-            cell.appendChild(front)
-            cell.appendChild(back)
-
-            row.appendChild(cell)
-        }
-    grid.appendChild(row)
-
-    }
-}
 
 let wordList = [
     'patio',
@@ -47,11 +28,28 @@ let keyboardButtons = new Map()
 let attempts = []
 let currentAttempt = ''
 
-loadGame()
-buildGrid()
-buildKeyBoard()
-updateGrid()
-window.addEventListener('keydown', handleKeyDown)
+function buildGrid() {
+    for( let i = 0; i < 6 ; i++) {
+        let row = document.createElement('div')
+        for(let j = 0 ;j < 5; j++ ) {
+            let cell = document.createElement('div')
+            cell.className = 'cell'
+            let front = document.createElement('div')
+            front.className = 'front'
+            let back = document.createElement('div')
+            back.className = 'back'
+            let surface = document.createElement('div')
+            surface.className = 'surface'
+            surface.style.transitionDelay = (j*300) + 'ms'
+            surface.appendChild(front)
+            surface.appendChild(back)
+            cell.appendChild(surface)
+
+            row.appendChild(cell)
+        }
+    grid.appendChild(row)
+    }
+}
 
 function loadGame () {
     let data
@@ -74,9 +72,7 @@ function saveGame () {
     try {
         localStorage.setItem('data', data )
         
-    } catch (error) {
-        
-    }
+    } catch (error) {}
 }
 
 function updateGrid() {
@@ -95,8 +91,9 @@ function updateGrid() {
 function drawAttempt(row, attempt, solved) {
     for( let i =0 ; i < 5 ; i++) {
         let cell = row.children[i]
-        let front = cell.children[0]
-        let back = cell.children[1]
+        let surface = cell.firstChild
+        let front = surface.children[0]
+        let back = surface.children[1]
         if(attempt[i] !== undefined) {
             front.textContent = attempt[i]
             back.textContent = attempt[i]
@@ -125,12 +122,11 @@ function drawAttempt(row, attempt, solved) {
 }
 
 function getBgColor ( attempt , i) {
-
     let correctLetter = secret[i]
     let attemptLetter = attempt[i]
-
-
-    if( attemptLetter ===undefined || secret.indexOf(attemptLetter) === -1 ) {
+    if ( 
+        attemptLetter ===undefined || 
+        secret.indexOf(attemptLetter) === -1 ) {
         return GREY
     } 
     if(correctLetter === attemptLetter) {
@@ -165,6 +161,9 @@ function handleKey(key) {
     if(attempts.length === 6) {
         return
     }
+    if(isAnimating) { 
+        return
+    }
     let letter = key.toLowerCase()
     if(letter === 'enter') {
         if(currentAttempt.length < 5) {
@@ -182,6 +181,7 @@ function handleKey(key) {
         currentAttempt = ''
         updateKeyBoard()
         saveGame()
+        pauseInput()
     } else if ( letter === 'backspace' ){
         currentAttempt = currentAttempt.slice(0, currentAttempt.length - 1)
     } else if(/^[a-z]$/.test(letter)) {
@@ -191,6 +191,17 @@ function handleKey(key) {
         }
     }
     updateGrid()
+}
+let isAnimating = false
+function pauseInput() {
+    if(isAnimating) {
+        throw Error('should not happen')
+    }
+    isAnimating = true
+    setTimeout(() => {
+        isAnimating = false
+
+    }, 2000)
 }
 function buildKeyBoard() {
     buildKeyBoardRow('qwertyuiop', false)
@@ -261,4 +272,9 @@ function updateKeyBoard () {
     }
 }
 
+loadGame()
+buildGrid()
+buildKeyBoard()
+updateGrid()
+window.addEventListener('keydown', handleKeyDown)
 document.addEventListener('click' , updateGrid)
